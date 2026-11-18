@@ -11,7 +11,7 @@ const slides:Slide[]=[
 ];
 export function Overlay({state:s,call,error}:{state:any;call:(action:string,data?:any)=>Promise<void>;error:string}){
  const [index,setIndex]=useState(0),[paused,setPaused]=useState(()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches),[password,setPassword]=useState('');
- useEffect(()=>{if(paused)return;const timer=setInterval(()=>setIndex(i=>(i+1)%slides.length),12000);return()=>clearInterval(timer);},[paused,index]);
+ useEffect(()=>{if(paused)return;const timer=setInterval(()=>setIndex(i=>(i+1)%slides.length),5000);return()=>clearInterval(timer);},[paused,index]);
  const slide=slides[index];
  return <div className="hydration-overlay"><aside className="reminder-panel">
   <header className="overlay-brand"><span className="drop-mark" aria-hidden="true">◒</span><span>SIP HAPPENS<small>YOUR WATER BREAK · v{s.updates.version}</small></span></header>

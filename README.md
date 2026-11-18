@@ -4,10 +4,10 @@ Windows Electron client and LAN admin application. This is an application-level 
 
 ## Download for Windows
 
-Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.6):
+Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.7):
 
-- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.6/Sip-Happens-Client-Setup-0.1.6.exe): install on the reminder PC.
-- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.6/Sip-Happens-Admin-Setup-0.1.6.exe): install on the controlling PC.
+- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.7/Sip-Happens-Client-Setup-0.1.7.exe): install on the reminder PC.
+- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.7/Sip-Happens-Admin-Setup-0.1.7.exe): install on the controlling PC.
 
 No Node.js or source checkout is needed. Both PCs should be on the same LAN. These are unsigned preview installers; hardware acceptance testing is still pending. SHA256SUMS.txt is included with the release for verifying downloads. If the repository is private, sign in to GitHub on the second PC with an account that has access.
 
@@ -77,7 +77,7 @@ Update both apps for explicit expired-code, invalid-code, attempt-limit and revo
 
 ## Reminder presentation (0.1.4+)
 
-Normal reminders use a borderless fullscreen window per display, above the taskbar. The left third contains reminder status and password unlock; the right two thirds displays bundled stock photographs illustrating thirst, fatigue and headache with general NHS-based symptom captions. Photos are posed illustrations, not diagnoses of the pictured people. Credits and sources are in docs/PHOTO_CREDITS.md. Slides rotate every 12 seconds, with Pause, Next and direct slide controls. Reduced-motion preferences start the slideshow paused and disable transitions.
+Normal reminders use a borderless fullscreen window per display, above the taskbar. The left third contains reminder status and password unlock; the right two thirds displays bundled stock photographs illustrating thirst, fatigue and headache with general NHS-based symptom captions. Photos are posed illustrations, not diagnoses of the pictured people. Credits and sources are in docs/PHOTO_CREDITS.md. Slides rotate every 5 seconds, with Pause, Next and direct slide controls. Reduced-motion preferences start the slideshow paused and disable transitions.
 
 Trigger reminder now in the admin demo explicitly returns to normal all-display mode. To test a spare display, trigger a reminder first, then simulate full-screen or no-spare-display placement. Game Mode continues to exclude occupied displays.
 
@@ -91,7 +91,17 @@ Version 0.1.6 slideshow order: chart, meme-2, headache, meme-3, fatigue, meme-1.
 Version 0.1.6 also makes Restart and install and admin-forced updates silent: NSIS runs without the setup wizard and reopens the app after installation. Normal install-on-exit already uses the updater's silent path. The update into 0.1.6 may still show the wizard when initiated by an older app; silent restarts take effect once 0.1.6 is installed. Windows elevation prompts can still appear for installations requiring administrator access.
 
 
-All launches now start hidden in the tray, including manual launches, sign-in and post-update restarts. Only clicking the tray icon (or its Open Sip Happens menu item) opens the dashboard. Launching the shortcut again keeps it hidden. Reminder overlays still display when due. The tray icon is a visible lime water droplet; Windows may place it in the hidden-icons menu.
+All launches now start hidden in the tray, including manual launches, sign-in and post-update restarts. Only clicking the tray icon (or its Open Sip Happens menu item) opens the dashboard. Launching the shortcut again keeps it hidden. Reminder overlays still display when due. The tray icon is a visible blue water droplet; Windows may place it in the hidden-icons menu.
 
 
 The interface now uses a water-blue palette and native Segoe UI typography across both apps and the reminder overlay, with a simpler reminder heading.
+
+## Version 0.1.7
+
+- Slideshow advances every five seconds.
+- Each connected client card has Force reminder now beside Unlock. It creates a real pending reminder immediately even outside active hours or while future reminders are paused, without stacking another reminder. Dismissal uses the normal password or authenticated admin unlock. Game Mode placement still applies, and repeated forces keep the same reminder ID. Force commands are validated, expire, reject duplicate delivery, and report acknowledgment rather than assuming success.
+- Game Mode is always on for normal and forced reminders. Existing off preferences are migrated on load; schedule updates cannot disable it. A fullscreen app keeps its monitor, a spare display gets a fullscreen overlay without focus activation, and no spare display means deferral. With no fullscreen app, all monitors are covered. Explicit demo display simulations remain available for testing; Trigger reminder now returns to automatic detection.
+- Overlays enter native fullscreen after being shown and reassert their position above the taskbar after the transition. Both new and existing overlay windows use the same presentation code.
+- A real reminder remains pending while the admin is offline until password/admin dismissal. Demo reminders are temporary and restore normal scheduling on disconnect or after five minutes.
+
+Validation: `npm.cmd test`, `npm.cmd run typecheck`, `npm.cmd run build`. The optional local Windows presentation check is `electron scripts/smoke-overlay.cjs` (using the local node_modules Electron executable); it briefly shows test windows, checks the bottom-of-display pixel belongs to the overlay, and checks spare-monitor focus when two displays are available. It does not change pairing or saved app state.

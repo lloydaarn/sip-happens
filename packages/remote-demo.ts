@@ -5,6 +5,7 @@ export const RemoteDemoCommand=z.object({type:z.literal('demo'),id:z.string().uu
 export class RemoteDemo {
  session?:DemoSession;
  original?:{state:Reminder['state'];settings:Reminder['settings']};
+ simulated=false;
  expires=0;
  constructor(private model:Reminder){}
  apply(raw:unknown,device:string,now:number,seen:Set<string>){
@@ -21,10 +22,11 @@ export class RemoteDemo {
    this.session=new DemoSession(this.model);
   }
   this.expires=now+300000;
-  if(c.event==='reminder')this.session.apply('normal',now);
+  if(c.event==='reminder'){this.simulated=false;this.session.apply('normal',now);}else if(['fullscreen','no-spare','normal'].includes(c.event))this.simulated=true;
   this.session.apply(c.event,now);
+  if(!this.simulated)this.model.settings.game=true;
   return 'acknowledged';
  }
- stop(){if(this.original){this.model.state={...this.original.state};this.model.settings={...this.original.settings};}this.original=undefined;this.session=undefined;this.expires=0;}
+ stop(){if(this.original){this.model.state={...this.original.state};this.model.settings={...this.original.settings};}this.original=undefined;this.session=undefined;this.expires=0;this.simulated=false;}
  tick(now:number){if(this.session&&now>=this.expires){this.stop();return true;}return false;}
 }
