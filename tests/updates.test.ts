@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import {EventEmitter} from 'node:events';
 import {setupUpdates} from '../apps/updates';
 class FakeUpdater extends EventEmitter {
- autoDownload=false;autoInstallOnAppQuit=false;allowPrerelease=true;allowDowngrade=true;checks=0;installs=0;
+ autoDownload=false;autoInstallOnAppQuit=false;allowPrerelease=true;allowDowngrade=true;checks=0;installs=0;lastInstall:{silent:boolean;runAfter:boolean}|undefined;
  async checkForUpdates(){this.checks++;}
- quitAndInstall(){this.installs++;}
+ quitAndInstall(silent:boolean,runAfter:boolean){this.installs++;this.lastInstall={silent,runAfter};}
 }
 test('downloads automatically but waits for safe install; ready state survives recheck',async()=>{
  const f=new FakeUpdater();let pending=true,quitting=false;
@@ -14,7 +14,7 @@ test('downloads automatically but waits for safe install; ready state survives r
  await u.check();assert.equal(f.checks,1);
  f.emit('update-downloaded',{version:'0.1.2'});await u.check();assert.equal(f.checks,1);
  assert.throws(()=>u.install(),/Dismiss/);assert.equal(f.installs,0);
- pending=false;u.install();assert.equal(f.installs,1);assert.equal(quitting,true);
+ pending=false;u.install();assert.equal(f.installs,1);assert.equal(quitting,true);assert.deepEqual(f.lastInstall,{silent:true,runAfter:true});
 });
 test('development/demo checks disabled and failures recover',async()=>{
  const f=new FakeUpdater();const disabled=setupUpdates(f,'0.1.1',false,()=>true,()=>{});
@@ -26,5 +26,5 @@ test('development/demo checks disabled and failures recover',async()=>{
 test('explicit force update installs on download even during a pending reminder',async()=>{
  const f=new FakeUpdater();let saved=false;const u=setupUpdates(f,'0.1.1',true,()=>false,()=>{saved=true;});
  await u.force();assert.equal(f.checks,1);assert.equal(f.installs,0);
- f.emit('update-downloaded',{version:'0.1.2'});assert.equal(f.installs,1);assert.equal(saved,true);
+ f.emit('update-downloaded',{version:'0.1.2'});assert.equal(f.installs,1);assert.equal(saved,true);assert.deepEqual(f.lastInstall,{silent:true,runAfter:true});
 });

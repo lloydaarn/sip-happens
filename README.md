@@ -86,3 +86,6 @@ Version 0.1.5 adds five user-supplied memes (including the thirst replacement) a
 
 
 Version 0.1.6 slideshow order: chart, meme-2, headache, meme-3, fatigue, meme-1. The user-supplied chart displays in full without added captions. Meme-4 and thirst have been removed.
+
+
+Version 0.1.6 also makes Restart and install and admin-forced updates silent: NSIS runs without the setup wizard and reopens the app after installation. Normal install-on-exit already uses the updater's silent path. The update into 0.1.6 may still show the wizard when initiated by an older app; silent restarts take effect once 0.1.6 is installed. Windows elevation prompts can still appear for installations requiring administrator access.
