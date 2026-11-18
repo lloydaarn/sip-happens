@@ -15,7 +15,7 @@ export function Overlay({state:s,call,error}:{state:any;call:(action:string,data
  const slide=slides[index];
  return <div className="hydration-overlay"><aside className="reminder-panel">
   <header className="overlay-brand"><span className="drop-mark" aria-hidden="true">◒</span><span>SIP HAPPENS<small>YOUR WATER BREAK · v{s.updates.version}</small></span></header>
-  <div className="reminder-copy"><span className="eyebrow">A MOMENT FOR YOURSELF</span><h1>Pause.<br/>Sip.<br/><em>Reset.</em></h1><p>A little water.<br/>A fresh start for the next part of your day.</p></div>
+  <div className="reminder-copy"><span className="eyebrow">WATER REMINDER</span><h1>Time for a<br/>water break.</h1><p>Take a moment to drink some water.<br/>Your work will be here when you get back.</p></div>
   <div className="unlock-card"><div className="connection-pill"><span className={s.connected?'status-dot online':'status-dot'}/>{s.connected?'Admin connected':'Admin offline'}</div><h2>Your break is waiting.</h2><p>{s.connected?'Your admin can acknowledge this reminder remotely.':'Use your local password to acknowledge this reminder.'}</p>
    {s.configured?<form onSubmit={async e=>{e.preventDefault();await call('password',password);setPassword('');}}><label htmlFor="unlock-password">Local unlock password</label><input id="unlock-password" type="password" autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} maxLength={256} placeholder="Enter your password"/><button type="submit">Unlock reminder ↗</button></form>:<p>No local password is configured. Use the admin to unlock, or end this demo below.</p>}
    {error&&<p role="alert" className="error">{error}</p>}
@@ -24,7 +24,7 @@ export function Overlay({state:s,call,error}:{state:any;call:(action:string,data
   <footer className="reminder-footer">{s.remoteDemo?<><span className="demo-badge">DEMO ACTIVE</span><button className="quiet-button" onClick={()=>call('stopDemo')}>End demo & restore schedule</button></>:<small>One pause. One reminder. Take your time.</small>}</footer>
  </aside><section className={'slideshow '+(slide.meme?'meme-slide':'')} aria-label="Hydration information slideshow">
   {slides.map((item,i)=><img key={item.image} className={'slide-photo '+(item.meme?'meme-photo ':'')+(index===i?'visible':'')} src={'assets/'+item.image} alt={index===i?item.alt:''} aria-hidden={index!==i}/>)}
-  {!slide.meme&&<><div className="photo-shade"/><div className="slideshow-top"><span>FEEL BETTER, ONE BREAK AT A TIME</span><span>{String(index+1).padStart(2,'0')} / {String(slides.length).padStart(2,'0')}</span></div>
+  {!slide.meme&&<><div className="photo-shade"/><div className="slideshow-top"><span>HYDRATION INFORMATION</span><span>{String(index+1).padStart(2,'0')} / {String(slides.length).padStart(2,'0')}</span></div>
   <div className="slide-caption"><span className="eyebrow">{slide.tag}</span><h2>{slide.title}</h2><p>{slide.body}</p><div className="slide-credits"><span>Health information: NHS · nhs.uk/conditions/dehydration</span><span>Stock photo: {slide.credit} · Posed symptom illustration</span></div></div></>}
  </section></div>;
 }

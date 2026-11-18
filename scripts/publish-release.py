@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -34,14 +35,18 @@ def request(url, method='GET', data=None, content='application/json'):
     req = urllib.request.Request(url, data=data, method=method, headers={'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'Content-Type': content, 'User-Agent': 'Sip-Happens-release', 'X-GitHub-Api-Version': '2022-11-28'})
     try:
         with urllib.request.urlopen(req, timeout=180) as response:
-            return json.load(response)
+            return None if response.status == 204 else json.load(response)
     except urllib.error.HTTPError as error:
         raise SystemExit(f'GitHub API returned HTTP {error.code}; incomplete release stays draft.')
 
 releases = request(base + '/releases')
-if any(r['tag_name'] == 'v' + version for r in releases):
-    raise SystemExit('This release already exists. Inspect it before retrying; no assets overwritten.')
-release = request(base + '/releases', 'POST', json.dumps({'tag_name': 'v' + version, 'target_commitish': sha, 'name': 'Sip Happens ' + version, 'draft': True, 'prerelease': False, 'body': 'Adds the supplied chart and sets slideshow order to chart, meme-2, headache, meme-3, fatigue, meme-1. Removes meme-4 and thirst. Chart and memes display in full without app-added captions. Restart and install and admin-forced updates now install silently and restart in the tray. All launches stay hidden until the tray icon is clicked. Updating from an older app may show the old wizard one final time.\n\nInstall this version manually once if you have 0.1.0. Future stable releases download automatically and install on tray Exit or Restart and install. Enable minimized startup in each app.\n\nInstallers are unsigned. Hardware and two-PC acceptance testing remains pending.'}).encode())
+existing = next((r for r in releases if r['tag_name'] == 'v' + version), None)
+if existing and (not existing['draft'] or '--replace-draft' not in sys.argv):
+    raise SystemExit('Release exists. Only a draft may be replaced using --replace-draft.')
+if existing:
+    for asset in existing['assets']:
+        request(base + '/releases/assets/' + str(asset['id']), 'DELETE')
+release = request(base + ('/releases/' + str(existing['id']) if existing else '/releases'), 'PATCH' if existing else 'POST', json.dumps({'tag_name': 'v' + version, 'target_commitish': sha, 'name': 'Sip Happens ' + version, 'draft': True, 'prerelease': False, 'body': 'Adds the supplied chart and sets slideshow order to chart, meme-2, headache, meme-3, fatigue, meme-1. Removes meme-4 and thirst. Chart and memes display in full without app-added captions. Restart and install and admin-forced updates now install silently and restart in the tray. All launches stay hidden until the tray icon is clicked. Both apps now use a water-blue theme and Segoe UI typography. Updating from an older app may show the old wizard one final time.\n\nInstall this version manually once if you have 0.1.0. Future stable releases download automatically and install on tray Exit or Restart and install. Enable minimized startup in each app.\n\nInstallers are unsigned. Hardware and two-PC acceptance testing remains pending.'}).encode())
 print('Created draft release', flush=True)
 checksums = []
 def upload(name, data):

@@ -92,3 +92,6 @@ Version 0.1.6 also makes Restart and install and admin-forced updates silent: NS
 
 
 All launches now start hidden in the tray, including manual launches, sign-in and post-update restarts. Only clicking the tray icon (or its Open Sip Happens menu item) opens the dashboard. Launching the shortcut again keeps it hidden. Reminder overlays still display when due. The tray icon is a visible lime water droplet; Windows may place it in the hidden-icons menu.
+
+
+The interface now uses a water-blue palette and native Segoe UI typography across both apps and the reminder overlay, with a simpler reminder heading.
