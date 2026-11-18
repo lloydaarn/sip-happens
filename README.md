@@ -2,6 +2,15 @@
 
 Windows Electron client and LAN admin application. This is an application-level reminder, not a Windows security boundary.
 
+## Download for Windows
+
+Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.0):
+
+- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.0/Sip.Happens.Client.Setup.0.1.0.exe): install on the reminder PC.
+- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.0/Sip.Happens.Admin.Setup.0.1.0.exe): install on the controlling PC.
+
+No Node.js or source checkout is needed. Both PCs should be on the same LAN. These are unsigned preview installers; hardware acceptance testing is still pending. SHA256SUMS.txt is included with the release for verifying downloads. If the repository is private, sign in to GitHub on the second PC with an account that has access.
+
 ## Run from source
 
 Install Node.js 24, then run `npm.cmd ci`. Use `npm.cmd run client` on the client PC and `npm.cmd run admin` on the admin PC. Development uses separate role-specific Windows application-data directories.
