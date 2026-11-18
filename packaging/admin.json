@@ -9,7 +9,8 @@
     "package.json"
   ],
   "extraMetadata": {
-    "main": "dist/admin.cjs"
+    "main": "dist/admin.cjs",
+    "name": "sip-happens-admin"
   },
   "win": {
     "target": "nsis"
@@ -23,5 +24,15 @@
       "from": "packages/detect.ps1",
       "to": "detect.ps1"
     }
-  ]
+  ],
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "lloydaarn",
+      "repo": "sip-happens",
+      "channel": "admin",
+      "releaseType": "release"
+    }
+  ],
+  "generateUpdatesFilesForAllChannels": false
 }

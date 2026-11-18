@@ -1,0 +1,23 @@
+export interface UpdateService {
+ autoDownload:boolean; autoInstallOnAppQuit:boolean; allowPrerelease:boolean; allowDowngrade:boolean;
+ on(event:string,listener:(info:any)=>void):unknown;
+ checkForUpdates():Promise<unknown>;
+ quitAndInstall(silent:boolean,runAfter:boolean):void;
+}
+export function setupUpdates(autoUpdater:UpdateService,version:string,enabled:boolean,canInstall:()=>boolean,beforeInstall:()=>void){
+ const state={status:enabled?'idle':'disabled',message:enabled?'Checks automatically every hour':'Updates are available in the installed app',version,availableVersion:'',progress:0};
+ let checking=false;
+ autoUpdater.autoDownload=true;
+ autoUpdater.autoInstallOnAppQuit=true;
+ autoUpdater.allowPrerelease=false;
+ autoUpdater.allowDowngrade=false;
+ autoUpdater.on('checking-for-update',()=>{state.status='checking';state.message='Checking for updates';});
+ autoUpdater.on('update-available',info=>{state.status='downloading';state.availableVersion=info.version;state.message='Downloading update';});
+ autoUpdater.on('download-progress',info=>{state.progress=Math.round(info.percent);});
+ autoUpdater.on('update-not-available',()=>{state.status='current';state.message='You are up to date';});
+ autoUpdater.on('update-downloaded',info=>{state.status='ready';state.availableVersion=info.version;state.message='Update ready. Install when you exit from the tray, or restart below.';});
+ autoUpdater.on('error',()=>{state.status='error';state.message='Update check or download failed. Check your connection and retry.';});
+ const check=async()=>{if(!enabled||checking||['downloading','ready'].includes(state.status))return;checking=true;try{await autoUpdater.checkForUpdates();}catch{state.status='error';state.message='Unable to reach the update service. Retry later.';}finally{checking=false;}};
+ if(enabled){setTimeout(()=>void check(),10000).unref();setInterval(()=>void check(),3600000).unref();}
+ return {state,check,install:()=>{if(!enabled||state.status!=='ready')throw Error('No downloaded update');if(!canInstall())throw Error('Dismiss the pending reminder before restarting');beforeInstall();autoUpdater.quitAndInstall(false,true);}};
+}

@@ -1,20 +1,22 @@
-import {app,BrowserWindow,ipcMain,screen,powerMonitor,Tray,Menu,nativeImage,safeStorage} from 'electron';
+import {app,BrowserWindow,ipcMain,screen,powerMonitor,Tray,Menu,nativeImage,safeStorage,dialog,clipboard} from 'electron';
 import {readFileSync,writeFileSync,renameSync,existsSync} from 'node:fs';
 import {join} from 'node:path';
 import {randomUUID,randomBytes,X509Certificate} from 'node:crypto';
 import {createServer} from 'node:https';
-import {hostname} from 'node:os';
+import {hostname,networkInterfaces} from 'node:os';
 import {execFile} from 'node:child_process';
 import {WebSocket,WebSocketServer} from 'ws';
 import selfsigned from 'selfsigned';
 import {z} from 'zod';
 import {Reminder,Settings,defaults,hashPassword,verifyPassword,targets} from '../packages/core';
 import {DemoSession} from '../packages/demo';
+import {autoUpdater} from 'electron-updater';
+import {setupUpdates} from './updates';
 declare const APP_ROLE:string;
 const demoMode=process.argv.includes('--demo');
 const admin=APP_ROLE==='admin';
 app.setName(`Sip Happens ${APP_ROLE}`);app.setPath('userData',join(app.getPath('appData'),`sip-happens-${APP_ROLE}${demoMode?'-demo':''}`));
-if(!app.requestSingleInstanceLock())app.quit();else app.whenReady().then(start);
+if(!app.requestSingleInstanceLock())app.quit();else app.whenReady().then(start).catch(()=>{dialog.showErrorBox('Sip Happens could not start','Unable to load saved settings or Windows-protected credentials. Your data has been preserved. See README troubleshooting for recovery.');app.exit(1);});
 async function start(){
  const file=join(app.getPath('userData'),'state.json');
  let db:any=existsSync(file)?JSON.parse(readFileSync(file,'utf8')):{id:randomUUID(),settings:defaults,state:{due:Date.now()+7200000},devices:{},events:[]};
@@ -29,8 +31,11 @@ async function start(){
  let code='',codeUntil=0,pairAttempts=0,fingerprint='';
  const event=(message:string)=>{db.events=[{time:new Date().toISOString(),message},...db.events].slice(0,200);save();};
  const persist=()=>{db.state=model.state;db.settings=model.settings;save();};
- const state=()=>({demo:demo?{placement:demo.placement,offline:demo.offline,graceUntil:demo.graceUntil,lastEvent:demo.lastEvent}:null,role:APP_ROLE,configured:!!db.password,connected,device:db.id,reminder:model.state.reminder,due:model.state.due,settings:model.settings,deferred,detectError,displays:screen.getAllDisplays().map(d=>({id:d.id,label:d.label})),fingerprint,code:Date.now()<codeUntil?code:'',port:db.port||9443,devices:Object.entries(db.devices).map(([id,v]:[string,any])=>({id,name:v.name,connected:sessions.has(id),...statuses.get(id)})),commands:[...commands.values()].slice(-30),events:db.events});
- const makeWindow=(overlay=false,bounds?:Electron.Rectangle)=>{const w=new BrowserWindow({width:960,height:800,...bounds,show:false,frame:!overlay,alwaysOnTop:overlay,skipTaskbar:overlay,resizable:!overlay,webPreferences:{preload:join(__dirname,'preload.cjs'),sandbox:true,contextIsolation:true,nodeIntegration:false}});w.setMenu(null);w.webContents.setWindowOpenHandler(()=>({action:'deny'}));w.webContents.on('will-navigate',e=>e.preventDefault());w.loadFile(join(__dirname,'index.html'),{query:{overlay:String(overlay)}});w.once('ready-to-show',()=>overlay&&model.settings.game?w.showInactive():w.show());w.on('close',e=>{if(!quitting){e.preventDefault();if(!overlay)w.hide();}});return w;};
+ const updates=setupUpdates(autoUpdater,app.getVersion(),app.isPackaged&&!demoMode,()=>admin||!model.state.reminder,()=>{quitting=true;});
+ const loginOptions={path:process.execPath,args:['--startup']};
+ if(app.isPackaged&&!demoMode&&app.getLoginItemSettings().openAtLogin)app.setLoginItemSettings({...loginOptions,openAtLogin:true});
+ const state=()=>({updates:updates.state,startup:app.getLoginItemSettings(loginOptions).openAtLogin,addresses:Object.values(networkInterfaces()).flat().filter(a=>a&&!a.internal&&a.family==='IPv4').map(a=>a!.address),demo:demo?{placement:demo.placement,offline:demo.offline,graceUntil:demo.graceUntil,lastEvent:demo.lastEvent}:null,role:APP_ROLE,configured:!!db.password,connected,device:db.id,reminder:model.state.reminder,due:model.state.due,settings:model.settings,deferred,detectError,displays:screen.getAllDisplays().map(d=>({id:d.id,label:d.label})),fingerprint,code:Date.now()<codeUntil?code:'',port:db.port||9443,devices:Object.entries(db.devices).map(([id,v]:[string,any])=>({id,name:v.name,connected:sessions.has(id),...statuses.get(id)})),commands:[...commands.values()].slice(-30),events:db.events});
+ const makeWindow=(overlay=false,bounds?:Electron.Rectangle)=>{const w=new BrowserWindow({width:960,height:800,...bounds,show:false,frame:!overlay,alwaysOnTop:overlay,skipTaskbar:overlay,resizable:!overlay,webPreferences:{preload:join(__dirname,'preload.cjs'),sandbox:true,contextIsolation:true,nodeIntegration:false}});w.setMenu(null);w.webContents.setWindowOpenHandler(()=>({action:'deny'}));w.webContents.on('will-navigate',e=>e.preventDefault());w.loadFile(join(__dirname,'index.html'),{query:{overlay:String(overlay)}});w.once('ready-to-show',()=>{if(!overlay&&process.argv.includes('--startup'))return;overlay&&model.settings.game?w.showInactive():w.show();});w.on('close',e=>{if(!quitting){e.preventDefault();if(!overlay)w.hide();}});return w;};
  const report=()=>{if(socket?.readyState===WebSocket.OPEN&&connected)socket.send(JSON.stringify({type:'status',demo:!!demo,reminder:model.state.reminder,deferred,game:model.settings.game,settings:model.settings}));};
  const render=()=>{const ds=screen.getAllDisplays();const ids=model.state.reminder?targets(ds.map(d=>d.id),demo?demo.occupied(ds.map(d=>d.id)):occupied,model.settings.game,model.settings.spare):[];deferred=!!model.state.reminder&&!ids.length;for(const [id,w] of overlays)if(!ids.includes(id)){w.destroy();overlays.delete(id);}for(const id of ids){const bounds=ds.find(d=>d.id===id)!.bounds;if(!overlays.has(id))overlays.set(id,makeWindow(true,bounds));else overlays.get(id)!.setBounds(bounds);}persist();report();};
  const send=(ws:WebSocket,x:unknown)=>ws.send(JSON.stringify(x));
@@ -65,7 +70,10 @@ async function start(){
   if(action==='unlock'&&admin){const id=z.string().uuid().parse(data);const st=statuses.get(id);if(!st?.reminder||!sessions.has(id))throw Error('No connected pending reminder');const c={type:'unlock',id:randomUUID(),device:id,reminder:st.reminder,expires:Date.now()+15000,outcome:'pending'};commands.set(c.id,c);send(sessions.get(id)!,c);setTimeout(()=>{if(c.outcome==='pending')c.outcome='expired';},15000);return;}
   if(action==='revoke'&&admin){const id=z.string().uuid().parse(data);delete db.devices[id];sessions.get(id)?.close();event('Device revoked');return;}
   if(action==='settings'){if(admin){const id=z.string().uuid().parse(data.device);if(!sessions.has(id))throw Error('Client offline');send(sessions.get(id)!,{type:'settings',settings:Settings.parse(data.settings)});}else{if(db.pair)throw Error('Paired schedules are controlled by the admin');model.settings=Settings.parse(data);if(model.settings.game)occupied=screen.getAllDisplays().map(d=>d.id);render();}return;}
-  if(action==='startup'){app.setLoginItemSettings({openAtLogin:z.boolean().parse(data)});return;}
+  if(action==='copyFingerprint'&&admin){clipboard.writeText(fingerprint);return;}
+  if(action==='checkUpdates'){await updates.check();return;}
+  if(action==='installUpdate'){updates.install();return;}
+  if(action==='startup'){if(demoMode||!app.isPackaged)throw Error('Enable startup in the installed app');app.setLoginItemSettings({...loginOptions,openAtLogin:z.boolean().parse(data)});return;}
   throw Error('Unknown action');
  });
  let elapsed=performance.now(),wall=Date.now(),grace=0;powerMonitor.on('resume',()=>{elapsed=performance.now();wall=Date.now();grace=Date.now()+15000;});

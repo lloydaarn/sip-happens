@@ -4,10 +4,10 @@ Windows Electron client and LAN admin application. This is an application-level 
 
 ## Download for Windows
 
-Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.0):
+Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.1):
 
-- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.0/Sip.Happens.Client.Setup.0.1.0.exe): install on the reminder PC.
-- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.0/Sip.Happens.Admin.Setup.0.1.0.exe): install on the controlling PC.
+- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.1/Sip-Happens-Client-Setup-0.1.1.exe): install on the reminder PC.
+- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.1/Sip-Happens-Admin-Setup-0.1.1.exe): install on the controlling PC.
 
 No Node.js or source checkout is needed. Both PCs should be on the same LAN. These are unsigned preview installers; hardware acceptance testing is still pending. SHA256SUMS.txt is included with the release for verifying downloads. If the repository is private, sign in to GitHub on the second PC with an account that has access.
 
@@ -59,3 +59,13 @@ The demo panel is available in the main window and reminder overlays:
 - **Reset demo** clears the demo reminder, returns scheduling and display behavior to defaults, and restores connection attempts. Password and pairing are retained.
 
 Pair this separate demo client with the admin to test real remote acknowledgments. The admin labels its device card `(demo)`. Password and remote unlock use the normal dismissal paths. Normal clients cannot invoke demo events or use the demo reset. Display simulation does not launch games or emulate physical hot-plug/focus behavior.
+
+## Automatic updates and startup (0.1.1+)
+
+Install 0.1.1 manually once on each PC: 0.1.0 has no updater. Installed apps check GitHub Releases after ten seconds and every hour, download newer stable releases, and install on an explicit tray Exit. Closing the main window hides it; it does not quit or install an update. A downloaded update also offers Restart and install; pending client reminders must be dismissed first. Updates never force a restart while the app is running.
+
+Enable **Launch minimized to tray at Windows sign-in** in each installed app. Startup uses `--startup` to keep the dashboard hidden; reminder overlays still appear when due. Open the dashboard from the tray or launch the shortcut again. Demo mode does not register sign-in or download updates.
+
+The public GitHub repository supplies separate `client.yml` and `admin.yml` update channels, preventing either app from downloading the other installer. No GitHub token is included in the apps. For each future version: bump package.json/package-lock.json, test, build both installers, then publish a stable GitHub Release containing both EXEs, both blockmaps and both role YAML files. Keep the release draft until every file is uploaded. Source edits alone do not update installed apps.
+
+If startup fails to decrypt credentials, the app now reports the error and exits. Preserve the state file before recovery; do not delete paired-device state casually. Windows-protected credentials may not transfer between test/installed builds or Windows accounts.
