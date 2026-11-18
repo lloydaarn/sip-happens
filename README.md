@@ -4,10 +4,10 @@ Windows Electron client and LAN admin application. This is an application-level 
 
 ## Download for Windows
 
-Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.1):
+Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.2):
 
-- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.1/Sip-Happens-Client-Setup-0.1.1.exe): install on the reminder PC.
-- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.1/Sip-Happens-Admin-Setup-0.1.1.exe): install on the controlling PC.
+- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.2/Sip-Happens-Client-Setup-0.1.2.exe): install on the reminder PC.
+- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.2/Sip-Happens-Admin-Setup-0.1.2.exe): install on the controlling PC.
 
 No Node.js or source checkout is needed. Both PCs should be on the same LAN. These are unsigned preview installers; hardware acceptance testing is still pending. SHA256SUMS.txt is included with the release for verifying downloads. If the repository is private, sign in to GitHub on the second PC with an account that has access.
 
@@ -71,3 +71,9 @@ The public GitHub repository supplies separate `client.yml` and `admin.yml` upda
 If startup fails to decrypt credentials, the app now reports the error and exits. Preserve the state file before recovery; do not delete paired-device state casually. Windows-protected credentials may not transfer between test/installed builds or Windows accounts.
 
 The version appears at the top of every app screen. Admin **Force update admin and clients now** queues a request for every paired client and immediately checks the admin. Connected clients check immediately; offline requests persist until reconnect. Each app downloads the latest stable release and restarts as soon as ready, even during a pending reminder (saved state restores it). This explicit action can interrupt the app; regular automatic checks still wait for Exit. The device card shows the last reported client version and update status. An accepted request is not proof installation completed: verify its version after reconnection. Clients older than 0.1.1 must first be upgraded manually.
+
+## Reporting connection problems (0.1.2+)
+
+Open **Connection diagnostics** on both PCs. It shows the current error code, attempted endpoint, timestamps, attempt count, retry time and suggested next step. **Copy diagnostic report** copies a bounded history from this session together with app/OS version. Review it before sharing: it includes the LAN address, but no passwords, pairing codes, device tokens, private keys or arbitrary server error text.
+
+Update both apps for explicit expired-code, invalid-code, attempt-limit and revoked-device rejection messages. Older admins may only produce CLOSED. REFUSED means the destination rejected the TCP connection; TIMEOUT suggests checking network/firewall settings but does not diagnose a firewall by itself. FINGERPRINT and AUTH_REJECTED stop automatic retries until you correct the pairing. Game Mode detection errors are displayed separately and cannot erase connection diagnostics.
