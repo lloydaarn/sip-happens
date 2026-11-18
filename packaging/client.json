@@ -1,0 +1,27 @@
+{
+  "appId": "local.siphappens.client",
+  "productName": "Sip Happens Client",
+  "directories": {
+    "output": "release/client"
+  },
+  "files": [
+    "dist/**/*",
+    "package.json"
+  ],
+  "extraMetadata": {
+    "main": "dist/client.cjs"
+  },
+  "win": {
+    "target": "nsis"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
+  },
+  "extraResources": [
+    {
+      "from": "packages/detect.ps1",
+      "to": "detect.ps1"
+    }
+  ]
+}
