@@ -2,7 +2,7 @@ import React,{useEffect,useState} from 'react';
 import './overlay.css';
 type Slide={image:string;alt:string;meme?:boolean;tag?:string;title?:string;body?:string;credit?:string};
 const slides:Slide[]=[
- {image:'thirst.jpg',alt:'A man resting after exercise and drinking water',tag:'01 / Early signals',title:'Thirst is a cue to pause.',body:'A dry mouth, lips or tongue can be signs of dehydration. Keep water within reach and take a moment to drink.',credit:'Mary Taylor / Pexels 6009251'},
+ {image:'thirst.png',alt:'Kitten with I smell dehydration and go drink water text',meme:true},
  {image:'fatigue.jpg',alt:'A tired woman resting her head beside her laptop',tag:'02 / Your energy',title:'Running low can feel tiring.',body:'Dehydration can leave you feeling tired. Step away from the screen for a moment and check in with how you feel.',credit:'Andrea Piacquadio / Pexels 3791136'},
  {image:'headache.png',alt:'A woman holding both temples with her eyes closed',tag:'03 / How you feel',title:'Headache. Dizziness. A signal to check in.',body:'Headaches and feeling light-headed can occur with dehydration. These symptoms can have other causes too; persistent or severe symptoms need medical advice.',credit:'User-supplied image'},
  {image:'meme-1.png',alt:'Cat pointing at water with Drink water text',meme:true},

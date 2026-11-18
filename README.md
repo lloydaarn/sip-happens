@@ -82,4 +82,4 @@ Normal reminders use a borderless fullscreen window per display, above the taskb
 Trigger reminder now in the admin demo explicitly returns to normal all-display mode. To test a spare display, trigger a reminder first, then simulate full-screen or no-spare-display placement. Game Mode continues to exclude occupied displays.
 
 
-Version 0.1.5 adds four user-supplied memes as uncropped, image-only slides with no app-added captions. Slideshow controls live in the left panel so nothing covers meme text. The supplied headache image replaces the previous stock photo.
+Version 0.1.5 adds five user-supplied memes (including the thirst replacement) as uncropped, image-only slides with no app-added captions. Slideshow controls live in the left panel so nothing covers meme text. The supplied headache image replaces the previous stock photo.
