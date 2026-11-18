@@ -23,3 +23,8 @@ test('development/demo checks disabled and failures recover',async()=>{
  const u=setupUpdates(g,'0.1.1',true,()=>true,()=>{});await u.check();assert.equal(u.state.status,'error');
  g.checkForUpdates=async()=>{g.emit('update-not-available');};await u.check();assert.equal(u.state.status,'current');
 });
+test('explicit force update installs on download even during a pending reminder',async()=>{
+ const f=new FakeUpdater();let saved=false;const u=setupUpdates(f,'0.1.1',true,()=>false,()=>{saved=true;});
+ await u.force();assert.equal(f.checks,1);assert.equal(f.installs,0);
+ f.emit('update-downloaded',{version:'0.1.2'});assert.equal(f.installs,1);assert.equal(saved,true);
+});
