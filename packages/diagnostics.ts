@@ -1,4 +1,5 @@
 export const issues = {
+ HEARTBEAT_TIMEOUT:['Admin stopped responding','All reminder overlays pause until the admin reconnects. Check the admin PC and LAN; the client will reconnect automatically.'],
  IDLE:['Not connected','Enter the admin address, fingerprint and a fresh pairing code.'],
  CONNECTING:['Connecting to admin','Waiting for the network and TLS handshake.'],
  AUTHENTICATING:['Admin reached; verifying pairing','Waiting for the admin to accept this device.'],

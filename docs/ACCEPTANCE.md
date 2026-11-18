@@ -16,3 +16,5 @@ Run on two Windows PCs before distribution; record OS, display topology/scaling,
 - Verify private-network firewall behavior, startup checkbox and tray lifecycle.
 
 Pending engineering follow-up: automated TLS pairing/revocation integration suite; installer signing and branded icon; preferred-monitor UI; schedule acknowledgment and persistence visibility in admin; heartbeat-based silent network failure detection; storage corruption recovery. Do not treat the manual acceptance criteria as completed by unit tests.
+
+Version 0.1.8 two-PC acceptance: verify live countdown and due time on both PCs; change a client password and reject the old one; reset a forgotten password from the paired admin and verify it does not dismiss a reminder; apply a preferred spare monitor, test occupied/disconnected fallback; snooze once for exactly five minutes, restart the client during snooze, and verify the same reminder returns only while the admin is available. Check a second snooze is unavailable, expired/wrong-device commands are rejected, and management success appears only after acknowledgment.

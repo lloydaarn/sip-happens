@@ -1,13 +1,25 @@
 # Sip Happens
 
-Windows Electron client and LAN admin application. This is an application-level reminder, not a Windows security boundary.
+Sip Happens is a hydration reminder for people who work from home and share a room or house with colleagues or a partner. When everyone is caught up in work, it's easy to forget to drink water. Sip Happens brings a water break onto the screen so you can remind each other to stay hydrated.
+
+Install the Windows client on the PC that needs reminders. A colleague or partner uses the admin app on another PC on the same local network to set the schedule and acknowledge reminders. The reminder screen rotates through stock photos, hydration information and memes to give the nudge a little personality. You can also unlock a reminder with a local password. This is an application-level reminder, not a Windows security boundary.
+
+## Screenshots
+
+The client reminder screen with a stock photo:
+
+![Sip Happens reminder with a stock photo of a tired woman beside her laptop and a hydration caption](docs/screenshots/reminder-stock-photo.png)
+
+The same reminder screen with a cat meme:
+
+![Sip Happens reminder with a cat meme encouraging you to drink water](docs/screenshots/reminder-meme.png)
 
 ## Download for Windows
 
-Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.7):
+Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.8):
 
-- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.7/Sip-Happens-Client-Setup-0.1.7.exe): install on the reminder PC.
-- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.7/Sip-Happens-Admin-Setup-0.1.7.exe): install on the controlling PC.
+- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.8/Sip-Happens-Client-Setup-0.1.8.exe): install on the reminder PC.
+- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.8/Sip-Happens-Admin-Setup-0.1.8.exe): install on the controlling PC.
 
 No Node.js or source checkout is needed. Both PCs should be on the same LAN. These are unsigned preview installers; hardware acceptance testing is still pending. SHA256SUMS.txt is included with the release for verifying downloads. If the repository is private, sign in to GitHub on the second PC with an account that has access.
 
@@ -105,3 +117,19 @@ The interface now uses a water-blue palette and native Segoe UI typography acros
 - A real reminder remains pending while the admin is offline until password/admin dismissal. Demo reminders are temporary and restore normal scheduling on disconnect or after five minutes.
 
 Validation: `npm.cmd test`, `npm.cmd run typecheck`, `npm.cmd run build`. The optional local Windows presentation check is `electron scripts/smoke-overlay.cjs` (using the local node_modules Electron executable); it briefly shows test windows, checks the bottom-of-display pixel belongs to the overlay, and checks spare-monitor focus when two displays are available. It does not change pairing or saved app state.
+
+
+## Version 0.1.8: admin availability
+
+New scheduled reminders wait for an authenticated, responsive admin connection. Deadlines are retained while offline; reconnecting can create at most one overdue reminder during active hours, subject to pause and resume grace. A real reminder already pending is retained, but its overlays close while the admin is unavailable, including after an offline restart. On reconnect, the same reminder returns using normal Game Mode placement; it is not acknowledged or replaced. Temporary demos still end on disconnection. WebSocket ping/pong health checks run every five seconds and time out an unanswered ping after five seconds; a silent network failure can take roughly ten seconds to detect. Resume/wake timer delays can extend detection, so scheduling also checks monotonic heartbeat age. Control pongs work with older app versions. Update both apps to version 0.1.8 to enable this behavior.
+
+## Version 0.1.8: client management
+
+1. **Live countdown:** each admin client card shows time to the next reminder, the next due time, or its paused/offline/outside-hours/pending/deferred/snoozed status. Countdown intervals are reported by the client and adjusted for time since receipt, so the two PCs do not need identical clock settings. Disconnected clients do not display a live countdown.
+2. **Password management:** open Change local password in the client and supply the current password plus a new password and confirmation. The paired admin can open Reset forgotten client password on the client card and set a replacement while the client is connected. No old password is required for this authenticated recovery path. Password changes/reset do not unlock reminders. Hashing is asynchronous, failed current-password attempts are throttled, and password operations cannot race. New passwords are sent over the pinned TLS connection and are excluded from admin command history, status and events.
+3. **Preferred monitor:** open Schedule and preferred monitor on an admin device card. Select a reported display or Automatic selection. A busy or disconnected preferred display falls back to another spare monitor; with none available, the reminder defers. Normal presentation still covers all displays when no fullscreen app is detected. Paired client schedule settings are read-only and the admin form reflects the client's actual reported settings. Schedule changes are confirmed through Command outcomes.
+4. **Five-minute snooze:** the client overlay and admin client card have Snooze 5 minutes. It hides the current reminder for five minutes while retaining its ID. It is available once per reminder and survives client restart. Durations above 300 seconds and repeated extensions are rejected. After the snooze expires, offline suspension and Game Mode placement still apply. Force reminder now can end a snooze early; it does not grant another snooze. Demo reminders cannot be snoozed.
+
+These controls require an updated client. Management commands are authenticated, device-specific, expiring and replay-protected, with pending/acknowledged/rejected/disconnected/expired outcomes. Acknowledgment is required to confirm remote changes. An interval change reschedules the next deadline from application time if no reminder is pending; a pending reminder is preserved.
+
+Validation includes `npm.cmd test` and `node scripts/smoke-management.cjs`. The integration script creates temporary isolated profiles and uses real Electron IPC and loopback TLS to verify countdown, displayed controls, monitor configuration, password change/reset, acknowledgment, snooze and offline suspension. It does not modify installed application profiles. Both apps must run version 0.1.8 or newer for all management controls.
