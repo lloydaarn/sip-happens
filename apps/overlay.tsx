@@ -2,13 +2,12 @@ import React,{useEffect,useState} from 'react';
 import './overlay.css';
 type Slide={image:string;alt:string;meme?:boolean;tag?:string;title?:string;body?:string;credit?:string};
 const slides:Slide[]=[
- {image:'thirst.png',alt:'Kitten with I smell dehydration and go drink water text',meme:true},
- {image:'fatigue.jpg',alt:'A tired woman resting her head beside her laptop',tag:'02 / Your energy',title:'Running low can feel tiring.',body:'Dehydration can leave you feeling tired. Step away from the screen for a moment and check in with how you feel.',credit:'Andrea Piacquadio / Pexels 3791136'},
- {image:'headache.png',alt:'A woman holding both temples with her eyes closed',tag:'03 / How you feel',title:'Headache. Dizziness. A signal to check in.',body:'Headaches and feeling light-headed can occur with dehydration. These symptoms can have other causes too; persistent or severe symptoms need medical advice.',credit:'User-supplied image'},
- {image:'meme-1.png',alt:'Cat pointing at water with Drink water text',meme:true},
+ {image:'chart.png',alt:'User-supplied Symptoms of Dehydration chart from SevenHills Hospital',meme:true},
  {image:'meme-2.png',alt:'Black and white cat with water and Drink water text',meme:true},
+ {image:'headache.png',alt:'A woman holding both temples with her eyes closed',tag:'03 / How you feel',title:'Headache. Dizziness. A signal to check in.',body:'Headaches and feeling light-headed can occur with dehydration. These symptoms can have other causes too; persistent or severe symptoms need medical advice.',credit:'User-supplied image'},
  {image:'meme-3.png',alt:'Black cat pointing at a bottle with Drink water text',meme:true},
- {image:'meme-4.png',alt:'Cat with I smell dehydration text',meme:true},
+ {image:'fatigue.jpg',alt:'A tired woman resting her head beside her laptop',tag:'02 / Your energy',title:'Running low can feel tiring.',body:'Dehydration can leave you feeling tired. Step away from the screen for a moment and check in with how you feel.',credit:'Andrea Piacquadio / Pexels 3791136'},
+ {image:'meme-1.png',alt:'Cat pointing at water with Drink water text',meme:true},
 ];
 export function Overlay({state:s,call,error}:{state:any;call:(action:string,data?:any)=>Promise<void>;error:string}){
  const [index,setIndex]=useState(0),[paused,setPaused]=useState(()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches),[password,setPassword]=useState('');

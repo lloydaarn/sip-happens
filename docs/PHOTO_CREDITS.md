@@ -15,3 +15,7 @@ Caption reference: [NHS: Dehydration](https://www.nhs.uk/conditions/dehydration/
 headache.png and meme-1.png through meme-4.png were supplied by the user and are bundled unchanged. The supplied headache image contains its original visible watermark; the application does not remove it or assert a separate stock license. The memes are shown in full with no app-added captions, gradients or credits over them. Their original embedded text remains intact.
 
 thirst.png is the user-supplied kitten meme replacing the original thirst photograph. It is bundled unchanged and displayed without app-added captions.
+
+## Slideshow revision (0.1.6)
+
+chart.png is the user-supplied SevenHills Hospital dehydration chart, bundled unchanged and shown in full without app-added text. The chart retains its original wording and attribution. It is a user-supplied illustration, separate from the NHS-referenced captions on the symptom photographs. Current order: chart.png, meme-2.png, headache.png, meme-3.png, fatigue.jpg, meme-1.png. meme-4.png and thirst.png were removed.

@@ -4,10 +4,10 @@ Windows Electron client and LAN admin application. This is an application-level 
 
 ## Download for Windows
 
-Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.5):
+Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.6):
 
-- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.5/Sip-Happens-Client-Setup-0.1.5.exe): install on the reminder PC.
-- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.5/Sip-Happens-Admin-Setup-0.1.5.exe): install on the controlling PC.
+- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.6/Sip-Happens-Client-Setup-0.1.6.exe): install on the reminder PC.
+- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.6/Sip-Happens-Admin-Setup-0.1.6.exe): install on the controlling PC.
 
 No Node.js or source checkout is needed. Both PCs should be on the same LAN. These are unsigned preview installers; hardware acceptance testing is still pending. SHA256SUMS.txt is included with the release for verifying downloads. If the repository is private, sign in to GitHub on the second PC with an account that has access.
 
@@ -83,3 +83,6 @@ Trigger reminder now in the admin demo explicitly returns to normal all-display 
 
 
 Version 0.1.5 adds five user-supplied memes (including the thirst replacement) as uncropped, image-only slides with no app-added captions. Slideshow controls live in the left panel so nothing covers meme text. The supplied headache image replaces the previous stock photo.
+
+
+Version 0.1.6 slideshow order: chart, meme-2, headache, meme-3, fatigue, meme-1. The user-supplied chart displays in full without added captions. Meme-4 and thirst have been removed.
