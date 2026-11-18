@@ -89,3 +89,6 @@ Version 0.1.6 slideshow order: chart, meme-2, headache, meme-3, fatigue, meme-1.
 
 
 Version 0.1.6 also makes Restart and install and admin-forced updates silent: NSIS runs without the setup wizard and reopens the app after installation. Normal install-on-exit already uses the updater's silent path. The update into 0.1.6 may still show the wizard when initiated by an older app; silent restarts take effect once 0.1.6 is installed. Windows elevation prompts can still appear for installations requiring administrator access.
+
+
+All launches now start hidden in the tray, including manual launches, sign-in and post-update restarts. Only clicking the tray icon (or its Open Sip Happens menu item) opens the dashboard. Launching the shortcut again keeps it hidden. Reminder overlays still display when due. The tray icon is a visible lime water droplet; Windows may place it in the hidden-icons menu.
