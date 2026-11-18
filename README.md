@@ -4,10 +4,10 @@ Windows Electron client and LAN admin application. This is an application-level 
 
 ## Download for Windows
 
-Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.3):
+Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.4):
 
-- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.3/Sip-Happens-Client-Setup-0.1.3.exe): install on the reminder PC.
-- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.3/Sip-Happens-Admin-Setup-0.1.3.exe): install on the controlling PC.
+- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.4/Sip-Happens-Client-Setup-0.1.4.exe): install on the reminder PC.
+- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.4/Sip-Happens-Admin-Setup-0.1.4.exe): install on the controlling PC.
 
 No Node.js or source checkout is needed. Both PCs should be on the same LAN. These are unsigned preview installers; hardware acceptance testing is still pending. SHA256SUMS.txt is included with the release for verifying downloads. If the repository is private, sign in to GitHub on the second PC with an account that has access.
 
@@ -74,3 +74,9 @@ The version appears at the top of every app screen. Admin **Force update admin a
 Open **Connection diagnostics** on both PCs. It shows the current error code, attempted endpoint, timestamps, attempt count, retry time and suggested next step. **Copy diagnostic report** copies a bounded history from this session together with app/OS version. Review it before sharing: it includes the LAN address, but no passwords, pairing codes, device tokens, private keys or arbitrary server error text.
 
 Update both apps for explicit expired-code, invalid-code, attempt-limit and revoked-device rejection messages. Older admins may only produce CLOSED. REFUSED means the destination rejected the TCP connection; TIMEOUT suggests checking network/firewall settings but does not diagnose a firewall by itself. FINGERPRINT and AUTH_REJECTED stop automatic retries until you correct the pairing. Game Mode detection errors are displayed separately and cannot erase connection diagnostics.
+
+## Reminder presentation (0.1.4+)
+
+Normal reminders use a borderless fullscreen window per display, above the taskbar. The left third contains reminder status and password unlock; the right two thirds displays bundled stock photographs illustrating thirst, fatigue and headache with general NHS-based symptom captions. Photos are posed illustrations, not diagnoses of the pictured people. Credits and sources are in docs/PHOTO_CREDITS.md. Slides rotate every 12 seconds, with Pause, Next and direct slide controls. Reduced-motion preferences start the slideshow paused and disable transitions.
+
+Trigger reminder now in the admin demo explicitly returns to normal all-display mode. To test a spare display, trigger a reminder first, then simulate full-screen or no-spare-display placement. Game Mode continues to exclude occupied displays.

@@ -25,3 +25,10 @@ test('demo timeout restores production policy and supports a second session',()=
  assert.equal(d.tick(300099),false);assert.equal(d.tick(300100),true);assert.deepEqual(m.state,{due:9000});
  assert.equal(d.apply(command(id,'reminder',400000),id,400000,new Set()),'acknowledged');assert.ok(m.state.reminder);
 });
+
+test('trigger reminder restores normal all-display presentation after game simulation',()=>{
+ const m=new Reminder({due:9000},{...defaults,game:true});const d=new RemoteDemo(m),id=randomUUID();
+ d.apply(command(id,'no-spare'),id,100,new Set());assert.equal(d.session?.placement,'no-spare');
+ d.apply(command(id,'reminder'),id,200,new Set());assert.equal(d.session?.placement,'normal');assert.equal(m.settings.game,false);assert.ok(m.state.reminder);
+ d.stop();assert.equal(m.settings.game,true);
+});

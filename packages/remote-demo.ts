@@ -21,6 +21,7 @@ export class RemoteDemo {
    this.session=new DemoSession(this.model);
   }
   this.expires=now+300000;
+  if(c.event==='reminder')this.session.apply('normal',now);
   this.session.apply(c.event,now);
   return 'acknowledged';
  }
