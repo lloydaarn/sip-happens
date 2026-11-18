@@ -4,10 +4,10 @@ Windows Electron client and LAN admin application. This is an application-level 
 
 ## Download for Windows
 
-Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.2):
+Download the installers from [GitHub Releases](https://github.com/lloydaarn/sip-happens/releases/tag/v0.1.3):
 
-- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.2/Sip-Happens-Client-Setup-0.1.2.exe): install on the reminder PC.
-- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.2/Sip-Happens-Admin-Setup-0.1.2.exe): install on the controlling PC.
+- [Client installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.3/Sip-Happens-Client-Setup-0.1.3.exe): install on the reminder PC.
+- [Admin installer](https://github.com/lloydaarn/sip-happens/releases/download/v0.1.3/Sip-Happens-Admin-Setup-0.1.3.exe): install on the controlling PC.
 
 No Node.js or source checkout is needed. Both PCs should be on the same LAN. These are unsigned preview installers; hardware acceptance testing is still pending. SHA256SUMS.txt is included with the release for verifying downloads. If the repository is private, sign in to GitHub on the second PC with an account that has access.
 
@@ -45,20 +45,17 @@ This is an initial implementation, pending acceptance testing. The automated tes
 
 Electron window isolation and inactive presentation follow the [Electron BrowserWindow documentation](https://www.electronjs.org/docs/latest/api/browser-window).
 
-## Demo mode
+## Admin-controlled demo (0.1.3+)
 
-Click **Open demo mode** in the client, or run `npm.cmd run demo` from source. The packaged client also accepts `--demo`. Create a demo password on first launch. The demo uses a separate `sip-happens-client-demo` profile and can run alongside the regular client. Its password and pairing persist; its schedule and simulation reset each launch.
+Update both apps, pair the normal client, then open its device card in the admin. **Demo controls** sends events directly to that client; no extra app or password setup is needed. Controls explain when a client is offline or needs an update.
 
-The demo panel is available in the main window and reminder overlays:
-
-- **Trigger reminder now** bypasses the wait and active-hours/pause policy for this demo event. Repeated clicks retain the same pending reminder.
-- **Simulate full-screen** treats the first physical display as occupied. A spare monitor gets the overlay; a single monitor defers it.
-- **No spare display** marks every physical display occupied; **Exit full-screen** restores normal all-monitor coverage. Trigger a reminder separately to see these placements.
-- **Disconnect admin** closes the real demo connection and holds reconnect attempts. **Reconnect admin** uses the saved demo pairing; it does not pretend an unreachable admin is connected.
-- **Simulate overdue resume** sets the deadline overdue and applies the normal 15-second grace period. Pause and active hours still apply. Reset first for a fresh default schedule.
-- **Reset demo** clears the demo reminder, returns scheduling and display behavior to defaults, and restores connection attempts. Password and pairing are retained.
-
-Pair this separate demo client with the admin to test real remote acknowledgments. The admin labels its device card `(demo)`. Password and remote unlock use the normal dismissal paths. Normal clients cannot invoke demo events or use the demo reset. Display simulation does not launch games or emulate physical hot-plug/focus behavior.
+- Trigger reminder now, simulate full-screen, no spare display, exit full-screen, or simulate overdue resume.
+- Use the regular Unlock current reminder button to test authenticated dismissal.
+- End demo / restore schedule returns to the original reminder deadline and policy. A demo cannot start while a real reminder is pending; dismiss that reminder first.
+- The client displays a Demo active banner and an End demo button, including on overlays. Demo also ends on connection loss or after five minutes without demo commands.
+- Normal state is preserved on disk throughout the demo, so restarting restores the real schedule. Password fallback works if already configured; admin unlock and End demo do not require a new password.
+- Command outcomes show pending, acknowledged, rejected, expired or disconnected. Only acknowledgment confirms the client applied a demo event.
+- Display simulation uses actual monitors: one occupied monitor means no spare display. Disconnect simulation is omitted because the admin needs its connection to control and end the demo.
 
 ## Automatic updates and startup (0.1.1+)
 
